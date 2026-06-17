@@ -4,6 +4,12 @@ import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./app.css";
 
+pendo.initialize({
+  visitor: {
+    id: ''
+  }
+});
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <BrowserRouter>
