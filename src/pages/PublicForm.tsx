@@ -36,6 +36,13 @@ export default function PublicForm() {
         body: JSON.stringify(values),
       });
       if (!res.ok) throw new Error("Submission failed");
+      if (typeof pendo !== "undefined") {
+        pendo.track("public_form_submitted", {
+          form_slug: slug,
+          fields_filled_count: Object.keys(values).length,
+          form_title: config?.title ?? "",
+        });
+      }
       setSubmitted(true);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Error submitting");

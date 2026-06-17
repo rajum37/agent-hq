@@ -54,6 +54,15 @@ export default function NewFormModal({ open, onClose, onCreated }: Props) {
         description: description.trim(),
         fields: validFields,
       });
+      if (typeof pendo !== "undefined") {
+        pendo.track("form_created", {
+          form_slug: slug.trim(),
+          form_title: title.trim(),
+          field_count: validFields.length,
+          field_types: [...new Set(validFields.map((f) => f.type))].join(","),
+          has_description: description.trim().length > 0,
+        });
+      }
       onCreated(form);
       reset();
       onClose();

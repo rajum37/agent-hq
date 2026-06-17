@@ -27,6 +27,14 @@ export default function VoiceInvitationBanner() {
   async function dismiss(id: string) {
     try {
       await call("voice.invitation.dismiss", { id });
+      const inv = invitations.find((i) => i.id === id);
+      if (typeof pendo !== "undefined") {
+        pendo.track("voice_invitation_dismissed", {
+          invitation_id: id,
+          agent_name: inv?.agent_name ?? "",
+          reason: inv?.reason ?? "",
+        });
+      }
       setInvitations((prev) => prev.filter((i) => i.id !== id));
     } catch {
       // noop
@@ -34,6 +42,14 @@ export default function VoiceInvitationBanner() {
   }
 
   function answer(id: string) {
+    const inv = invitations.find((i) => i.id === id);
+    if (typeof pendo !== "undefined") {
+      pendo.track("voice_invitation_answered", {
+        invitation_id: id,
+        agent_name: inv?.agent_name ?? "",
+        reason: inv?.reason ?? "",
+      });
+    }
     navigate(`/voice?invitation=${id}`);
   }
 

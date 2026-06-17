@@ -29,6 +29,11 @@ export default function VoiceHistory() {
     if (!confirm("Delete this conversation transcript?")) return;
     try {
       await call("voice.session.delete", { id });
+      if (typeof pendo !== "undefined") {
+        pendo.track("voice_session_deleted", {
+          session_id: id,
+        });
+      }
       setSessions((prev) => prev.filter((s) => s.id !== id));
     } catch {
       // noop

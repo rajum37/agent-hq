@@ -39,6 +39,12 @@ export default function Agents() {
     if (!confirm(`Delete agent "${name}"? This removes the sign-in key permanently.`)) return;
     try {
       await call("agent.delete", { id });
+      if (typeof pendo !== "undefined") {
+        pendo.track("agent_deleted", {
+          agent_id: id,
+          agent_name: name,
+        });
+      }
       setAgents((prev) => prev.filter((a) => a.id !== id));
     } catch (err) {
       alert(err instanceof Error ? err.message : "Delete failed");

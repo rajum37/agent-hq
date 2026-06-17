@@ -412,6 +412,11 @@ export default function Integrations() {
   async function copy(label: string, value: string) {
     const ok = await copyToClipboard(value);
     if (ok) {
+      if ((label === "prompt" || label === "guide") && typeof pendo !== "undefined") {
+        pendo.track("integration_guide_copied", {
+          copy_type: label === "prompt" ? "agent_system_prompt" : "full_integration_guide",
+        });
+      }
       setCopied(label);
       setTimeout(() => setCopied((c) => (c === label ? null : c)), 2000);
     } else {

@@ -89,6 +89,15 @@ export default function Tasks() {
     );
     try {
       await call("task.move", { id: taskId, status: newStatus });
+      if (typeof pendo !== "undefined") {
+        pendo.track("task_status_changed", {
+          task_id: taskId,
+          previous_status: existing.status,
+          new_status: newStatus,
+          task_title: existing.title,
+          task_priority: existing.priority,
+        });
+      }
     } catch {
       // Rollback on failure — ignore for seed-only tasks
       setTasks((prev) =>
