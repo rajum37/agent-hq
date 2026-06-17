@@ -64,6 +64,16 @@ export default function NewPageModal({ open, onClose, onCreated }: Props) {
         linked_form_slug: linkedFormSlug.trim() || null,
         accent: accent.trim() || null,
       });
+      if (typeof pendo !== "undefined") {
+        pendo.track("page_created", {
+          page_slug: slug.trim(),
+          page_title: title.trim(),
+          has_linked_form: !!linkedFormSlug.trim(),
+          linked_form_slug: linkedFormSlug.trim() || "",
+          has_accent_color: !!accent.trim(),
+          is_full_html: htmlBody.trim().toLowerCase().startsWith("<!doctype") || htmlBody.trim().toLowerCase().startsWith("<html"),
+        });
+      }
       onCreated(page);
       reset();
       onClose();

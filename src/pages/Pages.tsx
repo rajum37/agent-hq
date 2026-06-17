@@ -33,6 +33,12 @@ export default function Pages() {
     if (!confirm(`Delete landing page "${title}"? This cannot be undone.`)) return;
     try {
       await call("page.delete", { slug });
+      if (typeof pendo !== "undefined") {
+        pendo.track("page_deleted", {
+          page_slug: slug,
+          page_title: title,
+        });
+      }
       setPages((prev) => prev.filter((p) => p.slug !== slug));
     } catch (err) {
       alert(err instanceof Error ? err.message : "Delete failed");

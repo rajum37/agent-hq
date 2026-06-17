@@ -115,9 +115,10 @@ export default function VoiceSessionUI({
     if (finalTranscripts.length === 0) return;
     savedRef.current = true;
     try {
+      const endedAt = new Date().toISOString();
       await call("voice.session.save", {
         started_at: startedAtRef.current,
-        ended_at: new Date().toISOString(),
+        ended_at: endedAt,
         transcripts: finalTranscripts.map((t) => ({ role: t.role, text: t.text, final: t.final })),
         tools: toolsRef.current.map((t) => ({
           name: t.name,
@@ -127,6 +128,18 @@ export default function VoiceSessionUI({
         })),
         invitation_id: invitationId ?? null,
       });
+      if (typeof pendo !== "undefined") {
+        const durationSeconds = Math.round(
+          (new Date(endedAt).getTime() - new Date(startedAtRef.current).getTime()) / 1000,
+        );
+        pendo.track("voice_session_completed", {
+          duration_seconds: durationSeconds,
+          transcript_count: finalTranscripts.length,
+          tool_calls_count: toolsRef.current.length,
+          has_invitation: !!invitationId,
+          invitation_id: invitationId ?? "",
+        });
+      }
       if (invitationId) {
         await call("voice.invitation.accept", { id: invitationId }).catch(() => undefined);
       }

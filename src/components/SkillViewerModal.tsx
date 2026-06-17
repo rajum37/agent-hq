@@ -17,6 +17,11 @@ export default function SkillViewerModal({ open, onClose, title, description, sk
   async function copy() {
     const ok = await copyToClipboard(skillMarkdown);
     if (ok) {
+      if (typeof pendo !== "undefined") {
+        pendo.track("skill_copied", {
+          skill_title: title,
+        });
+      }
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } else {

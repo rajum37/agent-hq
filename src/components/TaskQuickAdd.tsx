@@ -26,6 +26,12 @@ export default function TaskQuickAdd({ onAdded }: Props) {
     setLoading(true);
     try {
       const task = await call<Task>("task.create", { title: trimmed });
+      if (typeof pendo !== "undefined") {
+        pendo.track("task_created", {
+          task_title: trimmed,
+          task_id: task.id,
+        });
+      }
       onAdded(task);
       setTitle("");
       setActive(false);

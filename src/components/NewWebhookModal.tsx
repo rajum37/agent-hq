@@ -25,6 +25,13 @@ export default function NewWebhookModal({ open, onClose, onCreated }: Props) {
         name: name.trim(),
         description: description.trim(),
       });
+      if (typeof pendo !== "undefined") {
+        pendo.track("webhook_created", {
+          webhook_name: name.trim(),
+          webhook_id: webhook.id,
+          has_description: description.trim().length > 0,
+        });
+      }
       onCreated(webhook);
       reset();
       onClose();

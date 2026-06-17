@@ -20,6 +20,9 @@ export default function VoiceOnboarding({ onSaved }: Props) {
     setError(null);
     try {
       await call("voice.config.set", { gemini_key: key.trim() });
+      if (typeof pendo !== "undefined") {
+        pendo.track("voice_config_saved");
+      }
       onSaved();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to save key");

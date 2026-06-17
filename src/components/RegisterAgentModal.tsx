@@ -33,6 +33,14 @@ export default function RegisterAgentModal({ open, onClose, onCreated }: Props) 
         color,
       });
       localStorage.setItem("agent_hq_has_real_agent", "1");
+      if (typeof pendo !== "undefined") {
+        pendo.track("agent_registered", {
+          agent_name: name.trim(),
+          agent_role: role.trim() || "Generalist",
+          agent_emoji: emoji,
+          agent_color: color,
+        });
+      }
       onCreated(agent);
       reset();
       onClose();

@@ -45,6 +45,13 @@ export default function Voice() {
       const res = await call<{ gemini_key: string }>("voice.config.get");
       setApiKey(res.gemini_key);
       if (invitationOverride) setInvitation(invitationOverride);
+      if (typeof pendo !== "undefined") {
+        pendo.track("voice_session_started", {
+          has_invitation: !!invitationOverride,
+          invitation_agent_name: invitationOverride?.agent_name ?? "",
+          invitation_reason: invitationOverride?.reason ?? "",
+        });
+      }
       setPhase("session");
     } catch (err) {
       alert(err instanceof Error ? err.message : "Failed to fetch Gemini key");
@@ -72,6 +79,9 @@ export default function Voice() {
     if (!confirm("Replace the stored Gemini key?")) return;
     try {
       await call("voice.config.clear");
+      if (typeof pendo !== "undefined") {
+        pendo.track("voice_config_reset");
+      }
       setPhase("onboarding");
     } catch (err) {
       alert(err instanceof Error ? err.message : "Failed to clear");
