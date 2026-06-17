@@ -119,6 +119,7 @@ export class VoiceSession {
   private stopped = false;
   private userTranscriptBuffer = "";
   private agentTranscriptBuffer = "";
+  connectedModel: string | null = null;
 
   constructor(opts: VoiceSessionOptions | string) {
     if (typeof opts === "string") {
@@ -198,6 +199,7 @@ export class VoiceSession {
           await new Promise((r) => setTimeout(r, 1500));
           if (opened) {
             connected = true;
+            this.connectedModel = model;
             break;
           }
           try {

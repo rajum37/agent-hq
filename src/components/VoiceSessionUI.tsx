@@ -48,6 +48,8 @@ export default function VoiceSessionUI({
   const transcriptsRef = useRef<Transcript[]>([]);
   const toolsRef = useRef<ToolEvent[]>([]);
   const savedRef = useRef(false);
+  const conversationIdRef = useRef(crypto.randomUUID());
+  const turnToolNamesRef = useRef<string[]>([]);
 
   useEffect(() => {
     const s = new VoiceSession({
@@ -74,8 +76,32 @@ export default function VoiceSessionUI({
           transcriptsRef.current = next;
           return next;
         });
+
+        if (e.final && window.pendo?.trackAgent) {
+          if (e.role === "user") {
+            window.pendo.trackAgent("prompt", {
+              agentId: "KODvkX0iXthUtkil_iPM851Mns0",
+              conversationId: conversationIdRef.current,
+              messageId: crypto.randomUUID(),
+              content: e.text,
+            });
+          } else {
+            window.pendo.trackAgent("agent_response", {
+              agentId: "KODvkX0iXthUtkil_iPM851Mns0",
+              conversationId: conversationIdRef.current,
+              messageId: crypto.randomUUID(),
+              content: e.text,
+              modelUsed: sessionRef.current?.connectedModel ?? undefined,
+              toolsUsed: turnToolNamesRef.current.length > 0 ? [...turnToolNamesRef.current] : [],
+            });
+            turnToolNamesRef.current = [];
+          }
+        }
       }
       if (e.type === "tool") {
+        if (!turnToolNamesRef.current.includes(e.name)) {
+          turnToolNamesRef.current.push(e.name);
+        }
         setTools((prev) => {
           const existing = prev.find(
             (t) => t.name === e.name && JSON.stringify(t.params) === JSON.stringify(e.params),
